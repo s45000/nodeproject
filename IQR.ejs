@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>IQR Page</title>
+</head>
+<body>
+	<h1>IQR Page</h1>
+	<hr />
+	<form method="post">
+		<table border="1">
+			<tr>
+				<td>방번호</td>
+				<td>방제</td>
+				<td>문제 장르</td>
+				<td>문제 수</td>
+				<td>인원</td>
+				<td>입장</td>
+			</tr>
+			<% room.forEach(function (item, index) { %>
+				<tr>
+					<td><%= item.N %>번방 </td>
+					<td><%= item.name %></td>
+					<td><%= item.genre %></td>
+					<td><%= item.quest %></td>
+					<td><%= item.people %>/<%= item.seat %></td>
+					<td><input type="radio" name="which" value=<%= item.N %>></td>
+						<% if(item.playing==1){ %>
+						<td>게임중</td>
+						<% } %>
+				</tr>
+			<% }); %>
+		</table>
+		<hr />
+		<input type="button" value="새로고침" onclick="location.href='http://127.0.0.1:52273/IQR'";>
+		<input type="submit" value="입장" />	
+		<hr />
+		<input type="button" value="<뒤로가기>" onclick="location.href='http://127.0.0.1:52273/Quiz'";>
+	</form>
+</body>
+</html>

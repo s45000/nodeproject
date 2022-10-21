@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>QuizGame Page</title>
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+	<h1>Quiz Quiz</h1>
+	<table border = "1">
+		<tr>
+			<td><%= room[0].N %>번방 </td>
+			<td>방제 : <%= room[0].name %></td>
+			<td>문제 종류 : <%= room[0].genre %></td>
+			<td>문제수 : <%= room[0].quest %></td>
+			<td>인원 : <%= (room[0].people)+1 %>/<%= room[0].seat %></td>
+		</tr>
+	</table>
+		<table bgcolor="#BC8F8F">
+			<tr bgcolor="#98FB98">
+				<td></td><td><div id="question"></div></td><td></td>
+			</tr>
+			<tr>
+				<td bgcolor="#FFA07A" row="3" id="user1">User1</td>
+				<td rowspan="3">
+					<textarea rows="15" cols="40" name="chatarea" id="chatarea" readonly></textarea>
+				</td>
+				<td bgcolor="#9370DB" row="3" id="user2">User2</td>
+			</tr>
+			<tr>
+				<td bgcolor="#9370DB" row="3" id="user3">User3</td>
+				<td bgcolor="#FFA07A" row="3" id="user4">User4</td>
+			</tr>
+			<tr>
+				<td bgcolor="#FFA07A" row="3" id="user5">User5</td>
+				<td bgcolor="#9370DB" row="3" id="user6">User6</td>
+			</tr>
+		</table>
+		<table>
+			<td id="userNN" readonly=""></td>
+			<form>
+			<td><input type="text" id="userchat" autocomplete="off" /></td>
+			<td><button>입력</button></td>
+			</form>
+		</table>
+		<hr />
+		<input type="button" value="게임시작" id="gamestart">
+		<input type="button" value="나가기" onclick="location.href='http://127.0.0.1:52273/IQR'">
+	<script>
+		var socket = io.connect();
+		$("#userNN").html("<%= user[0].nickname %> : ");
+		//userInfo[0,1,2] : N, nickname, QuizPoint
+		var userInfo = [<%= user[0].N %>,"<%= user[0].nickname %>",<%= user[0].QuizPoint %>];
+
+		socket.emit('join', {
+			roomName : <%= room[0].N %>,
+			userInfo : userInfo
+		});
+
+////////////////////////////////////////////////////
+		//채팅 입력
+		$('form').submit(function(){
+			socket.emit('message', $('#userchat').val());
+			$('#userchat').val('');
+			return false;
+		});
+		//채팅 출력
+		socket.on('message', function(data){
+			var span = $('<span class="nickname">').text(data.nickname);
+			var lic = $('<li>').append(span).append(" : ").append(data.msg);
+			$('#chatarea').append(lic);
+		});
+
+////////////////////////////////////////////////////
+
+		var startbutton = document.getElementById('gamestart');
+		startbutton.onclick = function() {
+			startbutton.disabled = true;
+			//게임시작
+			socket.emit('gamestart', <%= room[0].quest %>);
+		};
+
+		socket.on('QuizStart',function(){
+			$('#chatarea').append("[cys] : gamestart");
+		})
+
+		socket.on('question set',function(quiz){
+			$("#question").html(quiz[0].Question);
+		})
+
+		socket.on('game end',function(data){
+			startbutton.disabled = false;
+			alert("1등 -> "+data.one+
+				"\n2등 -> "+data.two+
+				"\n3등 -> "+data.three+
+				"\n4등 -> "+data.four+
+				"\n5등 -> "+data.five+
+				"\n6등 -> "+data.six);
+		})
+
+		socket.on('joinAccount',function(NN){
+			alert(NN+"님이 입장하셨습니다.");
+		})
+
+		socket.on('update player',function(data){
+			data.list.forEach(function(acc,i){
+				if(acc.N==data.index[0]){
+					$("#user1").html("닉네임 : "+acc.nickname+"<br>"+"퀴즈점수 : "+acc.QuizPoint);
+				}else if(acc.N==data.index[1]){
+					$("#user2").html("닉네임 : "+acc.nickname+"<br>"+"퀴즈점수 : "+acc.QuizPoint);
+				}else if(acc.N==data.index[2]){
+					$("#user3").html("닉네임 : "+acc.nickname+"<br>"+"퀴즈점수 : "+acc.QuizPoint);
+				}else if(acc.N==data.index[3]){
+					$("#user4").html("닉네임 : "+acc.nickname+"<br>"+"퀴즈점수 : "+acc.QuizPoint);
+				}else if(acc.N==data.index[4]){
+					$("#user5").html("닉네임 : "+acc.nickname+"<br>"+"퀴즈점수 : "+acc.QuizPoint);
+				}else if(acc.N==data.index[5]){
+					$("#user6").html("닉네임 : "+acc.nickname+"<br>"+"퀴즈점수 : "+acc.QuizPoint);
+				}
+			})
+		})
+	</script>
+</body>
+</html>

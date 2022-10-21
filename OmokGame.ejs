@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>OmokGame Page</title>
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+	<h1>Omok Game</h1>
+	<%= room[0].N %>번방 
+	방제 : <%= room[0].name %>
+	인원 : <%= (room[0].people)+1 %>/<%= room[0].seat %>
+	<hr />
+	<text id="turn" readonly ></text>
+	<table>
+		<td>
+		<table border = "1">
+			<% for(var i=0;i<10;i++){ %>
+			<tr>
+				<% for(var j=0;j<10;j++){ %>
+					<td>
+						<button id="<%= i %>행<%= j %>열" onclick="put({row:<%= i %> ,col:<%= j %>})" />
+					</td>
+				<% } %>
+			</tr>
+			<% } %>
+		</table>
+		</td>
+		<td>
+		<table bgcolor="orange">
+			<tr bgcolor="FF3399">
+				<td colspan="3">
+					<center><text id="user1" readonly /></center>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					번호 : 1
+				</td>
+			</tr>
+			<tr bgcolor="CC00CC">
+				<td colspan="3">
+					<center><text id="user2" readonly /></center>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					번호 : 2
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3"><textarea rows="15" cols="27" name="chatarea" id="chatarea" readonly></textarea></td>
+			</tr>
+			<tr>
+				<td id="userNN" readonly=""></td>
+				<form>
+				<td><input type="text" id="userchat" /></td>
+				<td><button>입력</button></td>
+				</form>
+			</tr>
+		</table>
+		</td>
+	</table>
+		<hr />
+		<input type="button" value="게임시작" id="gamestart">
+	<input type="button" value="나가기" onclick="location.href='http://127.0.0.1:52273/IOR'">
+	<script>
+		var socket = io.connect();
+		for(var i=0;i<10;i++){
+				for(var j=0;j<10;j++){
+					var str = "#"+i+"행"+j+"열";
+					$(str).attr('disabled','disabled');
+				}
+			}
+		$("#userNN").html("<%= user[0].nickname %> : ");
+		
+		//userInfo[0,1,2] : N, nickname, OmokPoint
+		var userInfo = [<%= user[0].N %>,"<%= user[0].nickname %>",<%= user[0].OmokPoint %>];
+
+		socket.emit('Ojoin', {
+			roomName : <%= room[0].N %>,
+			userInfo : userInfo
+		});
+
+		//채팅 입력
+		$('form').submit(function(){
+			socket.emit('Omessage', $('#userchat').val());
+			$('#userchat').val('');
+			return false;
+		});
+		//채팅 출력
+		socket.on('Omessage', function(data){
+			var span = $('<span class="nickname">').text(data.nickname);
+			var lic = $('<li>').append(span).append(" : ").append(data.msg);
+			$('#chatarea').append(lic);
+		});
+
+		var startbutton = document.getElementById('gamestart');
+		startbutton.onclick = function() {
+			//게임시작
+			socket.emit('Ogamestart',"amu");
+		};
+
+		socket.on('startmsg',function(){
+			for(var i=0;i<10;i++){
+				for(var j=0;j<10;j++){
+					var str = "#"+i+"행"+j+"열";
+					$(str).html('0');
+					$(str).css("background-color","white");
+					$(str).attr('disabled','disabled');
+				}
+			}
+			$('#chatarea').append("[cys] : gamestart");
+			startbutton.disabled = true;
+		})
+
+		socket.on('disabled',function(board){
+			for(var i=0;i<10;i++){
+				for(var j=0;j<10;j++){
+					var str = "#"+i+"행"+j+"열";
+					$(str).html(board[i][j]);
+					if(board[i][j]==1){
+						$(str).css("background-color","pink");
+					}
+					if(board[i][j]==2){
+						$(str).css("background-color","purple");
+					}
+					$(str).attr('disabled','disabled');
+				}
+			}
+		})
+
+		socket.on('boardset',function(board){
+			//보드에 보드출력
+			for(var i=0;i<10;i++){
+				for(var j=0;j<10;j++){
+					var str = "#"+i+"행"+j+"열";
+					$(str).html(board[i][j]);
+					if(board[i][j]==0){
+						$(str).removeAttr('disabled');
+					}else if(board[i][j]==1){
+						$(str).css("background-color","pink");
+						$(str).attr('disabled','disabled');
+					}else if(board[i][j]==2){
+						$(str).css("background-color","purple");
+						$(str).attr('disabled','disabled');
+					}
+				}
+			}
+		})
+
+		function put(where){
+			$(where.row+"행"+where.col+"열").disabled = true;
+			socket.emit('put',{row:where.row,col:where.col});
+		}
+		socket.on('WhoTurn',function(){
+			socket.emit('WhoTurn',"<%= user[0].nickname %>")
+		})
+		socket.on('turn',function(who){
+			$("#turn").html(who+"의 차례");
+		})
+
+		socket.on('Ogame end',function(data){
+			startbutton.disabled = false;
+			alert(data+" 승리!");
+		})
+
+		socket.on('ImWin',function(){
+			socket.emit('ImWin',<%= user[0].N %>)
+		})
+
+		socket.on('update Oplayer',function(data){
+			data.list.forEach(function(acc,i){
+				if(acc.N==data.index[0]){
+					$("#user1").html("닉네임 : "+acc.nickname+"<br>"+"오목점수 : "+acc.OmokPoint);
+				}else if(acc.N==data.index[1]){
+					$("#user2").html("닉네임 : "+acc.nickname+"<br>"+"오목점수 : "+acc.OmokPoint);
+				}
+			})
+		})
+
+		socket.on('endOgame',function(winner){
+			alert(winner+"번이 이겼다.");
+			startbutton.disabled = false;
+		})
+	</script>
+</body>
+</html>

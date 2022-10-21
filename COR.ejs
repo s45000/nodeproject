@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>COR Page</title>
+</head>
+<body>
+	<h1>COR Page</h1>
+	<hr />
+	<form method="post">
+		<table>
+			<tr>
+				<td><label>방번호 : </label></td>
+				<td><input type="text" name="roomnumber" value=<%= roomnumber %> size=1 readonly></td>
+			</tr>
+			<tr>
+				<td><label>방제 : </label></td>
+				<td><input type="text" name="roomname" maxlength="40" /></td>
+			</tr>
+		</table>
+		<input type="submit" value="제출" />	
+		<hr />
+		<input type="button" value="<뒤로가기>" onclick="location.href='http://127.0.0.1:52273/Omok'";>
+	</form>
+</body>
+</html>

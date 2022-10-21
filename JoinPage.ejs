@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Join Page</title>
+</head>
+<body>
+	<h1>Join Page</h1>
+	<hr />
+	<form method="post" AUTOCOMPLETE="OFF">
+		<table>
+			<tr>
+				<td><label>ID</label></td>
+				<td><input type="text" name="nID" /></td>
+				<td><%= iderr %></td>
+			</tr>
+			<tr>
+				<td><label>Pwd</label></td>
+				<td><input type="password" name="nPwd" /></td>
+				<td><%= pwerr %></td>
+			</tr>
+			<tr>
+				<td><label>PwdCheck</label></td>
+				<td><input type="password" name="nPwdCheck" /></td>
+				<td><%= pwcheck %></td>
+			</tr>
+			<tr>
+				<td><label>NickName</label></td>
+				<td><input type="text" name="nNickName" /></td>
+				<td><%= nnerr %></td>
+			</tr>
+		</table>
+		<input type="submit" value="확인" />
+	</form>
+</body>
+</html>

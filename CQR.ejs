@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>CQR Page</title>
+</head>
+<body>
+	<h1>CQR Page</h1>
+	<hr />
+	<form method="post">
+		<table>
+			<tr>
+				<td><label>방번호 : </label></td>
+				<td><input type="text" name="roomnumber" value=<%= roomnumber %> size=1 readonly></td>
+			</tr>
+			<tr>
+				<td><label>방제 : </label></td>
+				<td><input type="text" name="roomname" maxlength="40" /></td>
+			</tr>
+			<tr>
+				<td><label>장르 : </label></td>
+				<td>
+					<select name = "genre">
+						<option value = "all"> 전체 </option>
+						<option value = "proverb"> 속담 </option>
+						<option value = "initial"> 초성 </option>
+						<option value = "nonsense"> 넌센스 </option>
+						<option value = "history"> 역사 </option>
+						<option value = "literature"> 문학 </option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><label>문제 수 : </label></td>
+				<td><input type="number" name="quest"  size=1 maxlength="2" />< 15</td>
+			</tr>
+			<tr>
+				<td><label>최대인원 : </label></td>
+				<td><input type="number" name="seat"  size=1 maxlength="2" />< 6</td>
+			</tr>
+		</table>
+		<input type="submit" value="제출" />	<%= CQRerr %>
+		<hr />
+		<input type="button" value="<뒤로가기>" onclick="location.href='http://127.0.0.1:52273/Quiz'";>
+	</form>
+</body>
+</html>

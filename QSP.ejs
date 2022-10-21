@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Quiz Submit Page</title>
+</head>
+<body>
+	<h1>Quiz Submit Page</h1>
+	<hr />
+	<form method="post">
+		<% if(userN=='1') { %>
+			<tr>
+				<대기목록>
+			</tr>
+			<table>
+			<hr />
+			<% quizs.forEach(function (item, i) { %>
+				<tr>
+					<% if(item.Permisson==0) { %>
+						<td><%= item.N %>번 문제 : <%= item.Question %></td>
+						<td>정답 : <%= item.Answer %></td>
+						<td>장르 : <%= item.Genre %></td>
+						<td>승인? <input type="radio" name = "Per" value = <%= item.N %> ></td>
+					<% } %>
+				</tr>	
+			<% }); %>
+			</table>
+			
+			<hr />
+		<% }; %>
+		<input type="submit" value="제출" />	
+		<hr />
+		<table>
+			<tr>
+				<td>빈 문제는 제출되지 않습니다.</td>
+			</tr>
+			<tr>
+				<td><label>Question : </label></td>
+				<td><input type="text" name="Question" /></td>
+			</tr>
+			<tr>
+				<td><label>Answer : </label></td>
+				<td><input type="text" name="Answer" /></td>
+			</tr>
+			<tr>
+				<td><label>Genre : </label></td>
+				<td>
+					<select name = "Genre">
+						<option value = "proverb"> 속담 </option>
+						<option value = "initial"> 초성 </option>
+						<option value = "nonsense"> 넌센스 </option>
+						<option value = "history"> 역사 </option>
+						<option value = "literature"> 문학 </option>
+					</select>
+				</td>
+			</tr>
+		</table>
+		<hr />
+		<input type="button" value="<뒤로가기>" onclick="location.href='http://127.0.0.1:52273/Quiz'";>
+	</form>
+</body>
+</html>
